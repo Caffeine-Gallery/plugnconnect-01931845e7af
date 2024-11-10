@@ -1,0 +1,37 @@
+.wallet-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.wallet-container h1 {
+    margin-bottom: 30px;
+    color: #333;
+}
+
+#walletInfo {
+    margin-top: 20px;
+}
+
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#loader {
+    margin: 20px auto;
+}
+
+.btn-primary {
+    padding: 10px 20px;
+    font-size: 1.1em;
+}
+
+.card-text {
+    word-break: break-all;
+    margin-bottom: 15px;
+}
+
+.card-text:last-child {
+    margin-bottom: 0;
+}

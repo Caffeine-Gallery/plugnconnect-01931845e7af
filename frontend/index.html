@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IC Plug Wallet Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="index.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="wallet-container">
+            <h1>Internet Computer Plug Wallet Demo</h1>
+            <div id="walletSection">
+                <button id="connectWallet" class="btn btn-primary">Connect Plug Wallet</button>
+                <div id="walletInfo" class="d-none">
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Wallet Information</h5>
+                            <p class="card-text">Principal ID: <span id="principalId"></span></p>
+                            <p class="card-text">Account ID: <span id="accountId"></span></p>
+                            <p class="card-text">Balance: <span id="balance"></span> ICP</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="loader" class="d-none">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="index.js"></script>
+</body>
+</html>
