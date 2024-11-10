@@ -1,28 +1,24 @@
-const PLUG_WALLET_ID = 'nfid';
+import { backend } from 'declarations/backend';
 
-class PlugWallet {
+class PartyRSVP {
     constructor() {
         this.connected = false;
         this.principal = null;
-        this.accountId = null;
-        this.balance = 0;
         this.init();
     }
 
     async init() {
         const connectButton = document.getElementById('connectWallet');
-        const disconnectButton = document.getElementById('disconnectWallet');
-        
         connectButton.addEventListener('click', () => this.connect());
-        disconnectButton.addEventListener('click', () => this.disconnect());
         
-        // Check if Plug wallet is already connected
+        document.getElementById('rsvpForm').addEventListener('submit', (e) => this.handleRSVP(e));
+        
         if (window.ic?.plug) {
             const connected = await window.ic.plug.isConnected();
             if (connected) {
                 this.connected = true;
-                await this.updateWalletInfo();
-                this.updateUI();
+                await this.updateUI();
+                await this.loadAttendees();
             }
         }
     }
@@ -39,7 +35,6 @@ class PlugWallet {
                 throw new Error('Plug wallet not installed');
             }
 
-            // Request connection
             const whitelist = [];
             const host = 'https://mainnet.dfinity.network';
             
@@ -48,13 +43,13 @@ class PlugWallet {
                 host
             });
 
-            // Check connection and get principal
             const connected = await window.ic.plug.isConnected();
             if (!connected) throw new Error('Failed to connect to Plug wallet');
 
             this.connected = true;
-            await this.updateWalletInfo();
-            this.updateUI();
+            this.principal = await window.ic.plug.agent.getPrincipal();
+            await this.updateUI();
+            await this.loadAttendees();
         } catch (error) {
             console.error('Connection error:', error);
             alert(`Failed to connect: ${error.message}`);
@@ -63,54 +58,63 @@ class PlugWallet {
         }
     }
 
-    async disconnect() {
+    async handleRSVP(e) {
+        e.preventDefault();
         this.showLoader(true);
+
         try {
-            if (window.ic?.plug) {
-                await window.ic.plug.disconnect();
-            }
-            this.connected = false;
-            this.principal = null;
-            this.accountId = null;
-            this.balance = 0;
-            this.updateUI();
+            const name = document.getElementById('name').value;
+            const guests = parseInt(document.getElementById('guests').value);
+
+            await backend.registerAttendance(name, guests);
+            await this.loadAttendees();
+            document.getElementById('rsvpForm').reset();
+            alert('RSVP submitted successfully!');
         } catch (error) {
-            console.error('Disconnection error:', error);
-            alert(`Failed to disconnect: ${error.message}`);
+            console.error('RSVP error:', error);
+            alert(`Failed to submit RSVP: ${error.message}`);
         } finally {
             this.showLoader(false);
         }
     }
 
-    async updateWalletInfo() {
-        if (!this.connected) return;
-
+    async loadAttendees() {
         try {
-            // Get principal
-            this.principal = await window.ic.plug.agent.getPrincipal();
+            const attendees = await backend.getAttendees();
+            const attendeesList = document.getElementById('attendeesList');
+            attendeesList.innerHTML = '';
+
+            if (attendees.length === 0) {
+                attendeesList.innerHTML = '<p class="text-center">No RSVPs yet</p>';
+                return;
+            }
+
+            const list = document.createElement('ul');
+            list.className = 'list-unstyled';
             
-            // Get account ID
-            this.accountId = await window.ic.plug.accountId();
-            
-            // Get balance
-            const balance = await window.ic.plug.requestBalance();
-            this.balance = balance[0]?.amount ?? 0;
+            attendees.forEach(([name, guestCount]) => {
+                const li = document.createElement('li');
+                li.className = 'mb-2';
+                li.innerHTML = `
+                    <span class="attendee-name">${name}</span>
+                    <span class="guest-count">${guestCount > 0 ? `+${guestCount} guests` : 'No additional guests'}</span>
+                `;
+                list.appendChild(li);
+            });
+
+            attendeesList.appendChild(list);
         } catch (error) {
-            console.error('Error fetching wallet info:', error);
+            console.error('Error loading attendees:', error);
         }
     }
 
-    updateUI() {
+    async updateUI() {
         const walletInfo = document.getElementById('walletInfo');
         const connectButton = document.getElementById('connectWallet');
 
         if (this.connected) {
             walletInfo.classList.remove('d-none');
             connectButton.classList.add('d-none');
-            
-            document.getElementById('principalId').textContent = this.principal?.toString() ?? 'Not available';
-            document.getElementById('accountId').textContent = this.accountId ?? 'Not available';
-            document.getElementById('balance').textContent = this.balance;
         } else {
             walletInfo.classList.add('d-none');
             connectButton.classList.remove('d-none');
@@ -118,7 +122,6 @@ class PlugWallet {
     }
 }
 
-// Initialize wallet functionality when the page loads
 window.addEventListener('load', () => {
-    new PlugWallet();
+    new PartyRSVP();
 });

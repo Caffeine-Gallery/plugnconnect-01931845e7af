@@ -1,3 +1,7 @@
 service : {
-  ping: () -> (text) query;
+  getAttendees: () -> (vec record {
+                             text;
+                             nat;
+                           }) query;
+  registerAttendance: (text, nat) -> (bool);
 }
