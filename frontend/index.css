@@ -27,6 +27,56 @@ body {
     z-index: -1;
 }
 
+.panda-mascot {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 150px;
+    height: 150px;
+    background-image: url('https://raw.githubusercontent.com/DFinity-Community/public-assets/main/images/panda.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 1000;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.panda-mascot:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.panda-speech-bubble {
+    position: absolute;
+    top: -80px;
+    right: 0;
+    background: white;
+    color: var(--luxury-black);
+    padding: 10px 15px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.panda-speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    right: 20px;
+    border-width: 10px 10px 0;
+    border-style: solid;
+    border-color: white transparent transparent;
+}
+
+.panda-mascot:hover .panda-speech-bubble {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .wallet-container {
     max-width: 900px;
     margin: 50px auto;
@@ -165,5 +215,18 @@ body {
 
     .luxury-card {
         padding: 20px;
+    }
+
+    .panda-mascot {
+        width: 100px;
+        height: 100px;
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .panda-speech-bubble {
+        font-size: 0.8rem;
+        top: -60px;
+        padding: 8px 12px;
     }
 }
