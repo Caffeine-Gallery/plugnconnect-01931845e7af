@@ -11,13 +11,17 @@ class PlugWallet {
 
     async init() {
         const connectButton = document.getElementById('connectWallet');
+        const disconnectButton = document.getElementById('disconnectWallet');
+        
         connectButton.addEventListener('click', () => this.connect());
+        disconnectButton.addEventListener('click', () => this.disconnect());
         
         // Check if Plug wallet is already connected
         if (window.ic?.plug) {
             const connected = await window.ic.plug.isConnected();
             if (connected) {
                 this.connected = true;
+                await this.updateWalletInfo();
                 this.updateUI();
             }
         }
@@ -54,6 +58,25 @@ class PlugWallet {
         } catch (error) {
             console.error('Connection error:', error);
             alert(`Failed to connect: ${error.message}`);
+        } finally {
+            this.showLoader(false);
+        }
+    }
+
+    async disconnect() {
+        this.showLoader(true);
+        try {
+            if (window.ic?.plug) {
+                await window.ic.plug.disconnect();
+            }
+            this.connected = false;
+            this.principal = null;
+            this.accountId = null;
+            this.balance = 0;
+            this.updateUI();
+        } catch (error) {
+            console.error('Disconnection error:', error);
+            alert(`Failed to disconnect: ${error.message}`);
         } finally {
             this.showLoader(false);
         }

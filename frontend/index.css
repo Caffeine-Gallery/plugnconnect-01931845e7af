@@ -27,6 +27,11 @@
     font-size: 1.1em;
 }
 
+.btn-danger {
+    padding: 8px 16px;
+    font-size: 1em;
+}
+
 .card-text {
     word-break: break-all;
     margin-bottom: 15px;
